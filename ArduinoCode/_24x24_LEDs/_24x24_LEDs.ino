@@ -83,9 +83,14 @@ void loop(){//***start loop***start loop***start loop***start loop***start loop*
 // Each animation located in a sub routine
 // To control an LED, you simply:
 
-//  LED(i,j, 15);
+for(int i=0; i<8;i++){
+  for(int j=0;j<71;j++){
+    LED(i,j, 15);
+    delay(1000);
+  }
 }
 
+// puddle();
 }//***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop
 
 
@@ -93,6 +98,7 @@ void LED(int level, int column, byte brightness){
 
 //****LED Routine****LED Routine****LED Routine****LED Routine
 //This is where it all starts
+//This routine is how LEDs are updated, with the inputs for the LED location and its R G and B brightness levels
 
 // First, check and make sure nothing went beyond the limits, just clamp things at either 0 or 7 for location, and 0 or 15 for brightness
   if(level<0)
