@@ -149,18 +149,25 @@ void ofApp::update(){
     //main program
     pixels = videoGrayscaleCvImage.getPixels();
     //24x24
-    for (int i = 0; i*13 < video.getWidth(); i++){
+    for (int i = 0; i*10 < video.getWidth()-72; i++){
 		for (int j = 0; j*10 < video.getHeight(); j++){
-			leds[24*j+i] = pixels[(j*10) * (int)video.getWidth() + i*13];
+			leds[24*j+i] = pixels[(j*10) * (int)video.getWidth() + i*10];
 		}
 	}
+    
+    for (int i=0; i<576; i++) {
+        int a = i/24;
+        int b = i%24;
+        leds_flip[i] = leds[a*24 + (23-b)];
+    }
+    
     //8x72
     for (int k=0; k<576; k++) {
         int a = k/24;
         int b = a/8;
         int c = a%8;
         int d = k%24;
-        led_matrix[c][24*b+d] = leds[k];
+        led_matrix[c][24*b+d] = leds_flip[k];
     }
 
     //caluculation
@@ -176,7 +183,7 @@ void ofApp::update(){
 	}
 
     for (int i=0; i<576; i++) {
-        bytesToSend[i] = int(ofMap(leds[i], 0, 255, 0, 15)); //initialize the bytes to send
+        bytesToSend[i] = int(ofMap(leds_flip[i], 0, 255, 0, 15)); //initialize the bytes to send
     }
     
     //serial communication related
@@ -212,18 +219,18 @@ void ofApp::draw(){
     //draw 24x24
     
     ofSetColor(255, 255, 255);
-    for (int i = 0; i*13 < video.getWidth(); i++){
+    for (int i = 0; i*10 < video.getWidth()-72; i++){
 		for (int j = 0; j*10 < video.getHeight(); j++){
-			int pct = ofMap(leds[24*j+i], 0,255, 0,5);
+			int pct = ofMap(leds_flip[24*j+i], 0,255, 0,5);
 			ofSetColor(255,255,255);
-			ofCircle(120 + i*13 + 13/2, 240 + 40 + j*10 + 10/2, pct);
+			ofCircle(120 + i*10 + 13/2, 240 + 40 + j*10 + 10/2, pct);
 		}
     
     //draw 8x72
     for (int i=0; i<72; i++) {
         for (int j=0; j<8; j++) {
             int pct = ofMap(led_matrix[j][i], 0, 255, 0, 5);
-            ofCircle(120-1 + 13/2 + i*13, 280-1 + 240 + 20 + 10/2 + j*10, pct);
+            ofCircle(120-1 + 13/2 + i*10, 280-1 + 240 + 20 + 10/2 + j*10, pct);
         }
     }
 
@@ -237,20 +244,20 @@ void ofApp::draw(){
         //3x3 grid
         for (int i=0; i<3; i++) {
             for (int j=0; j<3; j++) {
-                ofRect(120-1 + 320/3*i,280-1 + 240/3*j, 320/3, 240/3);
+                ofRect(120-1 + 240/3*i,280-1 + 240/3*j, 240/3, 240/3);
             }
         }
         ofSetColor(0, 255, 0);
     
         //9 strip
         for (int i=0; i<9; i++) {
-            ofRect(120-1 + 320/3*i,280-1 + 240 + 20, 320/3, 240/3);
+            ofRect(120-1 + 240/3*i,280-1 + 240 + 20, 240/3, 240/3);
         }
     
         //8 lines for casode
         ofSetColor(255, 0, 0);
         for (int i=0; i<8; i++) {
-            ofLine(120-1 +13/2, 280-1 + 240 + 20 + 10/2 + 10*i, 120-1 +13/2 + 13*(72-1), 280-1 + 240 + 20 + 10/2 + 10*i);
+            ofLine(120-1 +13/2, 280-1 + 240 + 20 + 10/2 + 10*i, 120-1 +13/2 + 10*(72-1), 280-1 + 240 + 20 + 10/2 + 10*i);
         }
     
     ofPopStyle();

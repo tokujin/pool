@@ -54,6 +54,8 @@ class ofApp : public ofBaseApp{
         //(for debugging)
         long numMsgSent;
         unsigned char leds[576];  //output to
+        unsigned char leds_flip[576];  //output to
+
         int led_matrix[8][72];
         int led_strip[576];
     
