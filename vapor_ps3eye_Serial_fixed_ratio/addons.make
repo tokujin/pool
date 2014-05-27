@@ -1,0 +1,4 @@
+ofxOpenCv
+ofxXmlSettings
+ofxControlPanel
+ofxMacamPs3Eye

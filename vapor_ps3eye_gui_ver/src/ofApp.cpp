@@ -14,7 +14,7 @@ void ofApp::setup(){
 	width = video.getWidth(), height = video.getHeight(); // get the width and height
     
     
-//    video.setDeviceID(2);
+    //video.setDeviceID(2);
     for ( int i = 0; i< video.listDevices().size() ; i++){
         debug += video.listDevices()[i].deviceName;
         debug += "\n";

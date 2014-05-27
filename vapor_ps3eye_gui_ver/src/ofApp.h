@@ -66,7 +66,7 @@ class ofApp : public ofBaseApp{
     
         string debug;
     
-        //macam functions
+        //gui related macam functions
         void onAutoGainAndShutterChange(bool & value);
         void onGainChange(float & value);
         void onShutterChange(float & value);
@@ -78,7 +78,6 @@ class ofApp : public ofBaseApp{
         void onFlickerChange(int & value);
         void onWhiteBalanceChange(int & value);
 
-    
-	ofxPanel gui;
+        ofxPanel gui;
 
 };
