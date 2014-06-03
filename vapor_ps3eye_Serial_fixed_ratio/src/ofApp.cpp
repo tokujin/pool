@@ -12,7 +12,6 @@ void ofApp::setup(){
 	video.initGrabber(312, 240);	// setup video grabber:
 	width = video.getWidth(), height = video.getHeight(); // get the width and height
     
-    //video.setDeviceID(2);
     for ( int i = 0; i< video.listDevices().size() ; i++){
         debug += video.listDevices()[i].deviceName;
         debug += "\n";
@@ -41,7 +40,7 @@ void ofApp::setup(){
 	// this should be set to whatever com port your serial device is connected to.
 	// (ie, COM4 on a pc, /dev/tty.... on linux, /dev/tty... on a mac)
 	// arduino users check in arduino app....
-	int baud = 115200;
+	int baud = 57600;
 	mySerial.setup(0, baud); //open the first device
     
     //initialize array
@@ -50,6 +49,8 @@ void ofApp::setup(){
     }
     mySerial.flush();
     isInitialized = false;
+    
+    ofSetFrameRate(10);
 }
 
 
@@ -141,7 +142,6 @@ void ofApp::guiSetup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    ofSleepMillis(10);
 
     //grabber update
 	video.update();
@@ -151,7 +151,7 @@ void ofApp::update(){
     //24x24
     for (int i = 0; i*10 < video.getWidth()-72; i++){
 		for (int j = 0; j*10 < video.getHeight(); j++){
-			leds[24*j+i] = pixels[(j*10) * (int)video.getWidth() + i*10];
+			leds[24*j+i] = 255-pixels[(j*10) * (int)video.getWidth() + i*10];
 		}
 	}
     
@@ -183,7 +183,10 @@ void ofApp::update(){
 	}
 
     for (int i=0; i<576; i++) {
-        bytesToSend[i] = int(ofMap(leds_flip[i], 0, 255, 0, 15)); //initialize the bytes to send
+        if (leds_flip[i]<80) {
+            leds_flip[i]=0;
+        }
+        bytesToSend[i] = int(ofMap(leds_flip[i], 80, 255, 0, 5)); //initialize the bytes to send
     }
     
     //serial communication related
@@ -265,10 +268,10 @@ void ofApp::draw(){
     
     
     if(!isInitialized)
-        ofDrawBitmapString("PRESS 'S' TO SEND KICKOFF BYTE", 50, 200);
+        ofDrawBitmapString("PRESS 'S' TO SEND KICKOFF BYTE", 400, 400);
     else {
         //just for debug
-        ofDrawBitmapString("num messages sent total: "+ ofToString(numMsgSent), 50, 150);
+        ofDrawBitmapString("num messages sent total: "+ ofToString(numMsgSent), 400, 450);
     }
 
 }

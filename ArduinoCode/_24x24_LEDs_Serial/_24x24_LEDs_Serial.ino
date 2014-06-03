@@ -20,31 +20,34 @@ Parsons the New School for Design
 //These variables are used by multiplexing and Bit Angle Modulation Code
 int shift_out;//used in the code a lot in for(i= type loops
 byte anode[8];//byte to write to the anode shift register, 8 of them, shifting the ON level in each byte in the array
-byte BytesReceived[576]= {
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+byte BytesReceived[576]= {  //initial image
+  
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+
+
 
 }; //inmcoming bytes
 
@@ -70,7 +73,7 @@ void setup(){
   SPI.setDataMode(SPI_MODE0);// Mode 0 Rising edge of data, keep clock low
   SPI.setClockDivider(SPI_CLOCK_DIV2);//Run the data in at 16MHz/2 - 8MHz
 
-  //Serial.begin(115200);// if you need it?
+  Serial.begin(57600);// if you need it?
   noInterrupts();// kill interrupts until everybody is set up
 
   //We use Timer 1 to refresh the cube
@@ -93,15 +96,6 @@ void setup(){
   anode[6]=B00000010;
   anode[7]=B00000001;
 
-  //anode[0]=B00000001;
-  //anode[1]=B00000010;
-  //anode[2]=B00000100;
-  //anode[3]=B00001000;
-  //anode[4]=B00010000;
-  //anode[5]=B00100000;
-  //anode[6]=B01000000;
-  //anode[7]=B10000000;
-
   // don't hate on how I assigned the values to this register! haha
 
   //finally set up the Outputs
@@ -117,19 +111,19 @@ void setup(){
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
 
-    // Each animation located in a sub routine
-  // To control an LED, you simply:
-
-    
-
-//  for(int j=0;j<72;j++){
-//    for(int i=0; i<8;i++){
-//    LED(7-i,71-j,5);
-//    delay(40);
-//    }
-//  }
-
+  if (Serial.available()>0) { //we have received THREE BYTES (at least) 
+    for (int i=0; i< 576; i++){ //parse out all three bytes
+      BytesReceived[i] = int(Serial.read());
+    }    
+   delay(10);
+  //AT THE END OF THIS FUNCTION, I AM REQUESTING THE NEXT UPDATE FROM OF:
+  Serial.write('N');
+  Serial.println(BytesReceived[3]);
+  }
   pool();
+
+
+//pool();
 
 }//***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop
 
