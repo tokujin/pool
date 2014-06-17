@@ -7,6 +7,8 @@ Parsons the New School for Design
  
  Controlling 576(=24x24) individual LEDs
  
+ OF(72+1(header))x8 data
+ 
  */
 
 #include <SPI.h>// SPI Library used to clock data out to the shift registers
@@ -16,12 +18,11 @@ Parsons the New School for Design
 #define data_pin 11// used by SPI, must be pin 11
 #define clock_pin 13// used by SPI, must be 13
 
-//***variables***variables***variables***variables***variables***variables***variables***variables
 //These variables are used by multiplexing and Bit Angle Modulation Code
 int shift_out;//used in the code a lot in for(i= type loops
 byte anode[8];//byte to write to the anode shift register, 8 of them, shifting the ON level in each byte in the array
 byte BytesReceived[576]= {  //initial image
-  
+
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -38,7 +39,7 @@ byte BytesReceived[576]= {  //initial image
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -47,17 +48,13 @@ byte BytesReceived[576]= {  //initial image
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 
-
-
-}; //inmcoming bytes
+}; //this 24x24 grid is replaced by 
 
 //This is how the brightness for every LED is stored,  
 //Each LED only needs a 'bit' to know if it should be ON or OFF, so 72 Bytes gives you 576 bits= 576 LEDs
 //Since we are modulating the LEDs, using 4 bit resolution, each color has 4 arrays containing 72 bits each
 
 byte white0[72], white1[72], white2[72], white3[72]; //nori
-
-//notice how more resolution will eat up more of your precious RAM
 
 int level=0;//keeps track of which level we are shifting data to
 int anodelevel=0;//this increments through the anode levels
@@ -66,7 +63,6 @@ int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of t
 //These variables can be used for other things
 unsigned long start;//for a millis timer to cycle through the animations
 
-//****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup
 void setup(){
 
   SPI.setBitOrder(MSBFIRST);//Most Significant Bit First
@@ -111,14 +107,14 @@ void setup(){
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
 
-  if (Serial.available()>0) { //we have received THREE BYTES (at least) 
-    for (int i=0; i< 576; i++){ //parse out all three bytes
+  if (Serial.available()>0) {
+    for (int i=0; i< 72; i++){ //parse out all three bytes
       BytesReceived[i] = int(Serial.read());
     }    
    delay(10);
   //AT THE END OF THIS FUNCTION, I AM REQUESTING THE NEXT UPDATE FROM OF:
   Serial.write('N');
-  Serial.println(BytesReceived[3]);
+//  Serial.println(BytesReceived[3]);
   }
   pool();
 

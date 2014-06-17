@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-               BuildableName = "vapor_ps3eye_Serial_fixed_ratio.app"
+               BuildableName = "vapor_ps3eye_Serial_method_z.app"
                BlueprintName = "vapor_ps3eye_Serial_method_z"
                ReferencedContainer = "container:vapor_ps3eye_Serial_method_z.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "vapor_ps3eye_Serial_fixed_ratio.app"
+            BuildableName = "vapor_ps3eye_Serial_method_z.app"
             BlueprintName = "vapor_ps3eye_Serial_method_z"
             ReferencedContainer = "container:vapor_ps3eye_Serial_method_z.xcodeproj">
          </BuildableReference>
@@ -52,7 +52,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "vapor_ps3eye_Serial_fixed_ratio.app"
+            BuildableName = "vapor_ps3eye_Serial_method_z.app"
             BlueprintName = "vapor_ps3eye_Serial_method_z"
             ReferencedContainer = "container:vapor_ps3eye_Serial_method_z.xcodeproj">
          </BuildableReference>
@@ -70,7 +70,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "vapor_ps3eye_Serial_fixed_ratio.app"
+            BuildableName = "vapor_ps3eye_Serial_method_z.app"
             BlueprintName = "vapor_ps3eye_Serial_method_z"
             ReferencedContainer = "container:vapor_ps3eye_Serial_method_z.xcodeproj">
          </BuildableReference>

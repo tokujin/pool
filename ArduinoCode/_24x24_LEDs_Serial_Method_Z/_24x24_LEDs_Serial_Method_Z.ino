@@ -7,6 +7,8 @@ Parsons the New School for Design
  
  Controlling 576(=24x24) individual LEDs
  
+ OF(72+1(header))x8 data
+ 
  */
 
 #include <SPI.h>// SPI Library used to clock data out to the shift registers
@@ -16,16 +18,12 @@ Parsons the New School for Design
 #define data_pin 11// used by SPI, must be pin 11
 #define clock_pin 13// used by SPI, must be 13
 
-//***variables***variables***variables***variables***variables***variables***variables***variables
 //These variables are used by multiplexing and Bit Angle Modulation Code
 int shift_out;//used in the code a lot in for(i= type loops
 byte anode[8];//byte to write to the anode shift register, 8 of them, shifting the ON level in each byte in the array
-byte BytesReceived[576]= {
-0,1,1,1,0,1,1,1,1,0,1,1,0,0,1,1,1,0,0,1,1,1,1,0,
-1,0,0,0,0,0,1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0,0,0,
-0,1,1,0,0,0,1,0,0,1,0,0,1,0,1,1,1,0,0,0,1,0,0,0,
-0,0,0,1,0,0,1,0,0,1,1,1,1,0,1,0,1,0,0,0,1,0,0,0,
-1,1,1,0,0,0,1,0,0,1,0,0,1,0,1,0,0,1,1,0,1,0,0,0,
+int counter;
+byte BytesReceived[576]= {  //initial image
+
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -35,9 +33,14 @@ byte BytesReceived[576]= {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,15,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -46,7 +49,7 @@ byte BytesReceived[576]= {
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 
-}; //inmcoming bytes
+}; //this 24x24 grid is replaced by 
 
 //This is how the brightness for every LED is stored,  
 //Each LED only needs a 'bit' to know if it should be ON or OFF, so 72 Bytes gives you 576 bits= 576 LEDs
@@ -54,27 +57,20 @@ byte BytesReceived[576]= {
 
 byte white0[72], white1[72], white2[72], white3[72]; //nori
 
-//notice how more resolution will eat up more of your precious RAM
-
 int level=0;//keeps track of which level we are shifting data to
 int anodelevel=0;//this increments through the anode levels
 int BAM_Bit, BAM_Counter=0; // Bit Angle Modulation variables to keep track of things
 
-
 //These variables can be used for other things
 unsigned long start;//for a millis timer to cycle through the animations
 
-int counter=0;
-
-
-//****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup****setup
 void setup(){
 
   SPI.setBitOrder(MSBFIRST);//Most Significant Bit First
   SPI.setDataMode(SPI_MODE0);// Mode 0 Rising edge of data, keep clock low
   SPI.setClockDivider(SPI_CLOCK_DIV2);//Run the data in at 16MHz/2 - 8MHz
 
-  Serial.begin(57600);// if you need it?
+  Serial.begin(115200);// if you need it?
   noInterrupts();// kill interrupts until everybody is set up
 
   //We use Timer 1 to refresh the cube
@@ -112,18 +108,21 @@ void setup(){
 
 void loop(){//***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop***start loop
 
+  int incoming = Serial.read();
   if (Serial.available()>0) {
-    if(Serial.read()==255){
-      counter = 0;
-    }else{
-      BytesReceived[counter]=Serial.read();
-      counter++;
-    }
+      for(int i=0;i<8;i++){
+        if(incoming == 255-i){
+          counter=0;
+          counter++;
+        }else{
+          BytesReceived[72*i + (counter-1)]=incoming; //counter count up to 72
+          counter++;
+        }
+       Serial.write(i);
+      }
+    Serial.println(BytesReceived[0]);
   }
-  pool();
-
-
-//pool();
+pool();
 
 }//***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop***end loop
 

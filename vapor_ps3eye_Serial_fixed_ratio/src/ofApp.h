@@ -6,7 +6,7 @@
 #include "ofxMacamPs3Eye.h"
 #include "ofxGui.h"
 
-#define NUM_MSG_BYTES 576 //how many bytes we are expecting to receive
+#define NUM_MSG_BYTES 73 //how many bytes we are expecting to receive
 
 
 class ofApp : public ofBaseApp{
@@ -43,13 +43,12 @@ class ofApp : public ofBaseApp{
         unsigned char * mpixels;
         
         float pct = 0;
-    
-
         
         //set this array's length to the number of msg
         //bytes we are expecting to receive
-        unsigned char bytesToSend[NUM_MSG_BYTES];
-        
+        unsigned char bytesToSend[8][NUM_MSG_BYTES];
+    
+    
         //we'll use this to count how many msgs have been received so far
         //(for debugging)
         long numMsgSent;
@@ -64,7 +63,7 @@ class ofApp : public ofBaseApp{
     
         //serial related
         ofSerial mySerial;
-        unsigned char BytestoSend[NUM_MSG_BYTES];  //output to
+
         bool bSendSerialMessage;			// a flag for sending serial
         bool isInitialized;
     
@@ -83,5 +82,4 @@ class ofApp : public ofBaseApp{
         void onWhiteBalanceChange(int & value);
 
         ofxPanel gui;
-
 };

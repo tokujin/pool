@@ -40,17 +40,16 @@ void ofApp::setup(){
 	// this should be set to whatever com port your serial device is connected to.
 	// (ie, COM4 on a pc, /dev/tty.... on linux, /dev/tty... on a mac)
 	// arduino users check in arduino app....
-	int baud = 57600;
+	int baud = 115200;
 	mySerial.setup(0, baud); //open the first device
     
     //initialize array
-    for (int i = 0; i < NUM_MSG_BYTES; i++) {
-        bytesToSend[i] = 0;
+    for (int i = 0; i < 8; i++) {
+        for (int j=0; j<72; j++) {
+            bytesToSend[i][j] = 0;
+        }
     }
     mySerial.flush();
-    isInitialized = false;
-    
-    ofSetFrameRate(10);
 }
 
 
@@ -142,7 +141,6 @@ void ofApp::guiSetup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-
     //grabber update
 	video.update();
     
@@ -155,6 +153,7 @@ void ofApp::update(){
 		}
 	}
     
+    //flip horizontally
     for (int i=0; i<576; i++) {
         int a = i/24;
         int b = i%24;
@@ -182,26 +181,52 @@ void ofApp::update(){
 		}
 	}
 
-    for (int i=0; i<576; i++) {
-        if (leds_flip[i]<80) {
-            leds_flip[i]=0;
+    for (int i=0; i<8; i++) {
+        for (int j=1; j<73; j++) {
+            bytesToSend[i][0] = 255 - i; //header 255(case 0), 254(case 1), ....248(case 7)
+            bytesToSend[i][j] = int(ofMap(leds_flip[72*i+(j-1)],0,255,0,240));
         }
-        bytesToSend[i] = int(ofMap(leds_flip[i], 80, 255, 0, 5)); //initialize the bytes to send
     }
     
-    //serial communication related
-    if(mySerial.available() >0){ //something came in over serial port
-        
-        if(!isInitialized) isInitialized = true; //we heard from Arduino, we're initialized.
-        
         char incoming = mySerial.readByte();
         cout << "message received: "<< incoming << endl;
         
         mySerial.flush(); //flush whatever messages were received, clean slate next frame
         
-		mySerial.writeBytes(bytesToSend, NUM_MSG_BYTES); //send out current bytes to send
-        numMsgSent++; //for our own count
-	}
+        switch (incoming) {
+        
+            case 0:
+                mySerial.writeBytes(bytesToSend[0], 73); //send out current bytes to send
+                break;
+            case 1:
+                mySerial.writeBytes(bytesToSend[1], 73); //send out current bytes to send
+                break;
+            case 2:
+                mySerial.writeBytes(bytesToSend[2], 73); //send out current bytes to send
+                break;
+            case 3:
+                mySerial.writeBytes(bytesToSend[3], 73); //send out current bytes to send
+                break;
+            case 4:
+                mySerial.writeBytes(bytesToSend[4], 73); //send out current bytes to send
+                break;
+            case 5:
+                mySerial.writeBytes(bytesToSend[5], 73); //send out current bytes to send
+                break;
+            case 6:
+                mySerial.writeBytes(bytesToSend[6], 73); //send out current bytes to send
+                break;
+            case 7:
+                mySerial.writeBytes(bytesToSend[7], 73); //send out current bytes to send
+                break;
+
+            default:
+                break;
+        }
+
+
+        
+        numMsgSent+=0.125; //for our own count
     
     
     
@@ -282,7 +307,7 @@ void ofApp::keyPressed(int key){
     switch(key){
         case 's':
             cout << "SENDING KICK-OFF MESSAGE" << endl;
-            mySerial.writeBytes(bytesToSend, NUM_MSG_BYTES);
+            mySerial.writeBytes(bytesToSend[0], NUM_MSG_BYTES);
             break;
         default:
             cout << "UNRECOGNIZED BUTTON PRESS"<<endl;
