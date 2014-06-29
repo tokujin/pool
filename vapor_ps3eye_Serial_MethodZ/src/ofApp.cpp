@@ -41,12 +41,14 @@ void ofApp::setup(){
 	// this should be set to whatever com port your serial device is connected to.
 	// (ie, COM4 on a pc, /dev/tty.... on linux, /dev/tty... on a mac)
 	// arduino users check in arduino app....
-	int baud = 57600;
+	int baud = 9600;
 	mySerial.setup(0, baud); //open the first device
     
     //initialize array
-    for (int i = 0; i < NUM_MSG_BYTES; i++) {
-        bytesToSend[i] = 0;
+    for (int i=0; i<8; i++) {
+        for (int j = 0; j < NUM_MSG_BYTES; j++) {
+            BytesToSend[i][j] = 0;
+        }
     }
     mySerial.flush();
     isInitialized = false;
@@ -160,7 +162,7 @@ void ofApp::update(){
     for (int i=0; i<576; i++) {
         int a = i/24;
         int b = i%24;
-        leds_flip[i] = leds[a*24 + (23-b)];
+        leds_flipped[i] = leds[a*24 + (23-b)];
     }
     
     //8x72
@@ -169,7 +171,7 @@ void ofApp::update(){
         int b = a/8;
         int c = a%8;
         int d = k%24;
-        led_matrix[c][24*b+d] = leds_flip[k];
+        led_matrix[c][24*b+d] = leds_flipped[k];
     }
 
     //caluculation
@@ -184,21 +186,47 @@ void ofApp::update(){
 		}
 	}
 
-    bytesToSend[0] = 255;
-    for (int i=0; i<576; i++) {
-        if (leds_flip[i+1]<80) {
-            leds_flip[i+1]=0;
-        }
-        bytesToSend[i+1] = int(ofMap(leds_flip[i+1], 80, 255, 0, 5)); //initialize the bytes to send
-    }
-
     
-    mySerial.flush(); //flush whatever messages were received, clean slate next frame
-        
-    mySerial.writeBytes(bytesToSend, NUM_MSG_BYTES); //send out current bytes to send
+    for (int i=0; i<8; i++) {
+        for (int j=1; j<73; j++) {
+            BytesToSend[i][0] = 255 - i; //header 255(case 0), 254(case 1), ....248(case 7)
+            BytesToSend[i][j] = int(ofMap(leds_flipped[72*i+(j-1)],0,255,0,240));
+        }
+    }
+    
+    int incoming = mySerial.readByte();
+    
+    switch (incoming) {
+        case 0:
+            mySerial.writeBytes(BytesToSend[0], NUM_MSG_BYTES); //send out current bytes to send
+            break;
+        case 1:
+            mySerial.writeBytes(BytesToSend[1], NUM_MSG_BYTES); //send out current bytes to send
+        case 2:
+            mySerial.writeBytes(BytesToSend[2], NUM_MSG_BYTES); //send out current bytes to send
+        case 3:
+            mySerial.writeBytes(BytesToSend[3], NUM_MSG_BYTES); //send out current bytes to send
+        case 4:
+            mySerial.writeBytes(BytesToSend[4], NUM_MSG_BYTES); //send out current bytes to send
+        case 5:
+            mySerial.writeBytes(BytesToSend[5], NUM_MSG_BYTES); //send out current bytes to send
+        case 6:
+            mySerial.writeBytes(BytesToSend[6], NUM_MSG_BYTES); //send out current bytes to send
+        case 7:
+            mySerial.writeBytes(BytesToSend[7], NUM_MSG_BYTES); //send out current bytes to send
+
+            
+        default:
+            break;
+    }
+    
+//    for (int i=0; i<8; i++) {
+//        mySerial.writeBytes(BytesToSend[i], NUM_MSG_BYTES); //send out current bytes to send
+//    }
         numMsgSent++; //for our own count
     
-    
+    mySerial.flush(); //flush whatever messages were received, clean slate next frame
+
     
 }
 
@@ -219,7 +247,7 @@ void ofApp::draw(){
     ofSetColor(255, 255, 255);
     for (int i = 0; i*10 < video.getWidth()-72; i++){
 		for (int j = 0; j*10 < video.getHeight(); j++){
-			int pct = ofMap(leds_flip[24*j+i], 0,255, 0,5);
+			int pct = ofMap(leds_flipped[24*j+i], 0,255, 0,5);
 			ofSetColor(255,255,255);
 			ofCircle(120 + i*10 + 13/2, 240 + 40 + j*10 + 10/2, pct);
 		}
@@ -277,7 +305,7 @@ void ofApp::keyPressed(int key){
     switch(key){
         case 's':
             cout << "SENDING KICK-OFF MESSAGE" << endl;
-            mySerial.writeBytes(bytesToSend, NUM_MSG_BYTES);
+            mySerial.writeBytes(BytesToSend[0], NUM_MSG_BYTES);
             break;
         default:
             cout << "UNRECOGNIZED BUTTON PRESS"<<endl;

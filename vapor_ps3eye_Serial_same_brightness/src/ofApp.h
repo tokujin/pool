@@ -6,7 +6,7 @@
 #include "ofxMacamPs3Eye.h"
 #include "ofxGui.h"
 
-#define NUM_MSG_BYTES 576 //how many bytes we are expecting to receive
+#define NUM_MSG_BYTES 84 //how many bytes we send to Arduino 576/7+1(header)
 
 
 class ofApp : public ofBaseApp{
@@ -43,18 +43,14 @@ class ofApp : public ofBaseApp{
         unsigned char * mpixels;
         
         float pct = 0;
-    
 
-        
-        //set this array's length to the number of msg
-        //bytes we are expecting to receive
-        unsigned char bytesToSend[NUM_MSG_BYTES];
         
         //we'll use this to count how many msgs have been received so far
         //(for debugging)
         long numMsgSent;
         unsigned char leds[576];  //output to
         unsigned char leds_flip[576];  //output to
+        unsigned char arr[576];
 
         int led_matrix[8][72];
         int led_strip[576];

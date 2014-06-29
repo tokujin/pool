@@ -45,7 +45,7 @@ void ofApp::setup(){
     
     //initialize array
     for (int i = 0; i < NUM_MSG_BYTES; i++) {
-        bytesToSend[i] = 0;
+        BytestoSend[i] = 0;
     }
     mySerial.flush();
     isInitialized = false;
@@ -159,6 +159,7 @@ void ofApp::update(){
         int a = i/24;
         int b = i%24;
         leds_flip[i] = leds[a*24 + (23-b)];
+        arr[i] = leds_flip[i] > 200 ? true:false;
     }
     
     //8x72
@@ -182,11 +183,12 @@ void ofApp::update(){
 		}
 	}
 
+    BytestoSend[0]=255;
+    
     for (int i=0; i<576; i++) {
-        if (leds_flip[i]<80) {
-            leds_flip[i]=0;
+        if (arr[i]==true) {
+            BytestoSend[1+(i/7)] |= (0x00000001 << (i%7));
         }
-        bytesToSend[i] = int(ofMap(leds_flip[i], 80, 255, 0, 5)); //initialize the bytes to send
     }
     
     //serial communication related
@@ -199,7 +201,7 @@ void ofApp::update(){
         
         mySerial.flush(); //flush whatever messages were received, clean slate next frame
         
-		mySerial.writeBytes(bytesToSend, NUM_MSG_BYTES); //send out current bytes to send
+		mySerial.writeBytes(BytestoSend, NUM_MSG_BYTES); //send out current bytes to send
         numMsgSent++; //for our own count
 	}
     
@@ -236,6 +238,15 @@ void ofApp::draw(){
             ofCircle(120-1 + 13/2 + i*10, 280-1 + 240 + 20 + 10/2 + j*10, pct);
         }
     }
+    
+
+        for (int i=0; i<24; i++) {
+            for (int j=0; j<24; j++) {
+                ofCircle(i*10, j*10, arr[i]*3);
+            }
+        }
+        
+        
 
     //additional line
     ofPushStyle();
@@ -282,7 +293,7 @@ void ofApp::keyPressed(int key){
     switch(key){
         case 's':
             cout << "SENDING KICK-OFF MESSAGE" << endl;
-            mySerial.writeBytes(bytesToSend, NUM_MSG_BYTES);
+            mySerial.writeBytes(BytestoSend, NUM_MSG_BYTES);
             break;
         default:
             cout << "UNRECOGNIZED BUTTON PRESS"<<endl;
